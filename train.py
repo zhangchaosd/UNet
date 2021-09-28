@@ -2,6 +2,7 @@
 from torch.utils.data.dataset import Dataset
 from Dataset import SEGData
 import torch
+import torch.nn as nn
 from torch.utils.data import DataLoader
 from Transforms import ImageTransform
 from UNet import UNet
@@ -27,15 +28,15 @@ if __name__ == '__main__':
     train_dataloader = DataLoader(SEGData(dataset_dir = DATASET_PATH, is_train = True, transform = ImageTransform(), target_transform = ImageTransform(needCrop = True)), batch_size = batchsize, shuffle = True)
     model = UNet(in_channel = 3, out_channel = 3).to(device = device)
 
-    #criterion = Loss_yolov1()
+    criterion = nn.BCELoss()
     optimizer = torch.optim.SGD(model.parameters(), lr = lr, momentum = 0.9, weight_decay = 0.0005)
     for e in range(epoch):
         model.train()
         for i, (inputs, label) in enumerate(train_dataloader):
             inputs = inputs.to(device = device)
-            label = label.float().to(device = device)
+            label = label.to(device = device)
             pred = model(inputs)
-            loss = 1#criterion(pred, label)
+            loss = criterion(pred, label)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()

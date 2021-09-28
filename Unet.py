@@ -1,8 +1,6 @@
-import os
-from Dataset import SEGData
 import torch
 import torch.nn as nn
-
+import torchvision.transforms
 from torchvision.transforms import ToTensor
 import matplotlib.pyplot as plt
 
@@ -20,9 +18,10 @@ class DownsampleLayer(nn.modules):
         self.Downsample = nn.Sequential(
             nn.MaxPool2d(kernel_size = 2, stride = 2 ) #??????????????
         )
-    def forward(self, x):
+    def forward(self, x, cropSize):
         out1 = self.Conv_BN_RELU(x)
         out2 = self.Downsample(out1)
+        out1 = torch.transforms.functional.CenterCrop(out1, cropSize)
         print(out1.shape)
         #TODO out1 crop   copy????????  torchvision.transforms.CenterCrop(size)
         return out1, out2
@@ -75,10 +74,10 @@ class UNet(nn.modules):
         #TODO    params INIT
 
     def forward(self, x):
-        out1, x = self.d1(x)
-        out2, x = self.d2(x)
-        out3, x = self.d3(x)
-        out4, x = self.d4(x)
+        out1, x = self.d1(x, 392)
+        out2, x = self.d2(x, 200)
+        out3, x = self.d3(x, 104)
+        out4, x = self.d4(x, 56)
         x = self.Conv_BN_RELU_2(x)
         x = self.u1(x, out4)
         x = self.u2(x, out3)

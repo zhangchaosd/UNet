@@ -18,5 +18,5 @@ class ImageTransform(object):
         img = transforms.functional.pad(img, padding = (paddinglr, paddingud), padding_mode = 'reflect')
         img = transforms.functional.resize(img, (self.input_size, self.input_size))
         if self.needCrop:
-            img = transforms.functional.CenterCrop(img, self.cropSize)
+            img = transforms.functional.center_crop(img, self.cropSize)
         return img

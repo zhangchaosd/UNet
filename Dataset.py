@@ -22,10 +22,12 @@ class SEGData(Dataset):
         return  len(self.filenames)
 
     def __getitem__(self, idx):
-        img = read_image(self.img_dir + self.filenames[idx] + ".jpg").type(torch.float)  #TO cuda
-        label = read_image(self.img_labels + self.filenames[idx] + ".jpg").type(torch.float)  #TO cuda
+        img = read_image(self.img_dir + self.filenames[idx] + ".jpg").type(torch.float)
+        label = read_image(self.img_labels + self.filenames[idx] + ".png").type(torch.float)
+        #print(img.shape)
+        #print(label.shape)
         if self.transform:
             img = self.transform(img)
         if self.target_transform:
-            labels = self.target_transform(label)
+            label = self.target_transform(label)
         return img, label

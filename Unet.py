@@ -4,7 +4,7 @@ import torchvision.transforms
 from torchvision.transforms import ToTensor
 import matplotlib.pyplot as plt
 
-class DownsampleLayer(nn.modules):
+class DownsampleLayer(nn.Module):
     def __init__(self, in_channel, out_channel):
         super().__init__()
         self.Conv_BN_RELU = nn.Sequential(
@@ -21,12 +21,11 @@ class DownsampleLayer(nn.modules):
     def forward(self, x, cropSize):
         out1 = self.Conv_BN_RELU(x)
         out2 = self.Downsample(out1)
-        out1 = torch.transforms.functional.CenterCrop(out1, cropSize)
-        print(out1.shape)
+        out1 = torchvision.transforms.functional.center_crop(out1, cropSize)
         #TODO out1 crop   copy????????  torchvision.transforms.CenterCrop(size)
         return out1, out2
 
-class UpsampleLayer(nn.modules):
+class UpsampleLayer(nn.Module):
     def __init__(self, in_channel, out_channel):
         super().__init__()
         self.Upsample = nn.Sequential(
@@ -48,7 +47,7 @@ class UpsampleLayer(nn.modules):
         out3 = self.Conv_BN_RELU(out2)
         return out3
 
-class UNet(nn.modules):
+class UNet(nn.Module):
     def __init__(self, in_channel, out_channel):
         super().__init__() #TODO init params!!!!!!!!!!!!!!!!!!!!!!
         self.d1 = DownsampleLayer(in_channel, 64)
@@ -63,12 +62,12 @@ class UNet(nn.modules):
             nn.BatchNorm2d(1024),
             nn.ReLU()
         )
-        self.u1 = UpsampleLayer(1024 + 512, 512)
-        self.u2 = UpsampleLayer(512 + 256, 256)
-        self.u3 = UpsampleLayer(256 + 128, 128)
-        self.u4 = UpsampleLayer(128 + 64, 64)
+        self.u1 = UpsampleLayer(1024, 512)
+        self.u2 = UpsampleLayer(512, 256)
+        self.u3 = UpsampleLayer(256, 128)
+        self.u4 = UpsampleLayer(128, 64)
         self.Conv_Sigmoid = nn.Sequential(
-            nn.Conv2d(in_channels = 64, out_channels = out_channel, kernel_size = 1, padding = 1),
+            nn.Conv2d(in_channels = 64, out_channels = out_channel, kernel_size = 1),
             nn.Sigmoid()
         )
         #TODO    params INIT

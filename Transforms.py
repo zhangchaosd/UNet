@@ -15,7 +15,10 @@ class ImageTransform(object):
             paddingud = (w - h) // 2
         elif w < h:
             paddinglr = (h - w) // 2
-        img = transforms.functional.pad(img, padding = (paddinglr, paddingud), padding_mode = 'reflect')
+        if paddinglr > w or paddingud > h :
+            img = transforms.functional.pad(img, padding = (paddinglr, paddingud))
+        else:
+            img = transforms.functional.pad(img, padding = (paddinglr, paddingud), padding_mode = 'reflect')
         img = transforms.functional.resize(img, (self.input_size, self.input_size))
         if self.needCrop:
             img = transforms.functional.center_crop(img, self.cropSize)

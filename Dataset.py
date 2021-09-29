@@ -1,7 +1,5 @@
-import os
 import torch
 from torch.utils.data import Dataset
-from torchvision import datasets
 from torchvision.io import read_image
 
 class SEGData(Dataset):
@@ -24,8 +22,6 @@ class SEGData(Dataset):
     def __getitem__(self, idx):
         img = read_image(self.img_dir + self.filenames[idx] + ".jpg").type(torch.float)
         label = read_image(self.img_labels + self.filenames[idx] + ".png").type(torch.float)
-        #print(img.shape)
-        #print(label.shape)
         if self.transform:
             img = self.transform(img)
         if self.target_transform:

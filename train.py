@@ -1,6 +1,5 @@
-
-from torch.utils.data.dataset import Dataset
 from Dataset import SEGData
+from LossFunction import Loss_UNet
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
@@ -11,7 +10,6 @@ from UNet import UNet
 DATASET_PATH = 'D:/DATASETS/VOC2012/'
 
 if __name__ == '__main__':
-
     epoch = 50
     batchsize = 5
     lr = 0.001
@@ -28,7 +26,7 @@ if __name__ == '__main__':
     train_dataloader = DataLoader(SEGData(dataset_dir = DATASET_PATH, is_train = True, transform = ImageTransform(), target_transform = ImageTransform(needCrop = True)), batch_size = batchsize, shuffle = True)
     model = UNet(in_channel = 3, out_channel = 1).to(device = device)
 
-    criterion = nn.BCELoss()
+    loss_function = Loss_UNet()
     optimizer = torch.optim.SGD(model.parameters(), lr = lr, momentum = 0.9, weight_decay = 0.0005)
     for e in range(epoch):
         model.train()
@@ -36,13 +34,13 @@ if __name__ == '__main__':
             inputs = inputs.to(device = device)
             label = label.to(device = device)
             pred = model(inputs)
-            loss = criterion(pred, label)
+            loss = loss_function(pred, label)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
 
             print("Epoch %d/%d| Step %d/%d| Loss: %.2f"%(e, epoch, i, len(train_data) // batchsize, loss))
-        #if (e + 1) % 10 == 0:
-        #    torch.save(model, "C:/Users/97090/Desktop/dataset/VOCdevkit/VOC2012/models_pkl/YOLOv1_epoch" + str(e + 1) + ".pkl")
-        #    print('saved one model')
-            #compute_val_map(model)
+        if (e + 1) % 10 == 0:
+            torch.save(model, DATASET_PATH + 'models_pkl/YOLOv1_epoch' + str(e + 1) + '.pkl')
+            print('saved one model')
+        #compute_val_map(model)

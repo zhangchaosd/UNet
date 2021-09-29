@@ -22,7 +22,7 @@ class DownsampleLayer(nn.Module):
         out1 = self.Conv_BN_RELU(x)
         out2 = self.Downsample(out1)
         out1 = torchvision.transforms.functional.center_crop(out1, cropSize)
-        #TODO out1 crop   copy????????  torchvision.transforms.CenterCrop(size)
+        #TODO out1 copy????????
         return out1, out2
 
 class UpsampleLayer(nn.Module):
@@ -70,7 +70,6 @@ class UNet(nn.Module):
             nn.Conv2d(in_channels = 64, out_channels = out_channel, kernel_size = 1),
             nn.Sigmoid()
         )
-        #TODO    params INIT
 
     def forward(self, x):
         out1, x = self.d1(x, 392)
